@@ -1,7 +1,6 @@
 package com.hamid.techtales.repo;
 
 import com.hamid.techtales.model.Post;
-import com.hamid.techtales.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
