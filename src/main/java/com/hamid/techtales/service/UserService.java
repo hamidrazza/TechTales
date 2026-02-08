@@ -18,7 +18,7 @@ public class UserService {
 
     private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);
 
-    public String register(User user){
+    public String register(User user) {
 
         user.setUsername(user.getUsername().toLowerCase());
         user.setPassword(encoder.encode(user.getPassword()));
