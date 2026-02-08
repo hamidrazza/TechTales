@@ -4,6 +4,7 @@ import com.hamid.techtales.model.Post;
 import com.hamid.techtales.model.dto.PostRequestDTO;
 import com.hamid.techtales.model.dto.PostResponseDTO;
 import com.hamid.techtales.service.PostService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,7 +24,7 @@ public class PostController {
     }
 
     @PostMapping("newPost")
-    public ResponseEntity<PostResponseDTO> newPost(@RequestBody PostRequestDTO requestDTO){
+    public ResponseEntity<PostResponseDTO> newPost(@Valid @RequestBody PostRequestDTO requestDTO){
         PostResponseDTO response = postService.newPost(requestDTO);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
