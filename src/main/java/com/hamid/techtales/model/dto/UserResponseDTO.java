@@ -5,5 +5,4 @@ import java.util.Set;
 public record UserResponseDTO(
         String username,
         Set<String> roles
-) {
-}
+) {}

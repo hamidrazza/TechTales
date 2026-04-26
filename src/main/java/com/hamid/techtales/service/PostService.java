@@ -2,7 +2,6 @@ package com.hamid.techtales.service;
 
 import com.hamid.techtales.model.Post;
 import com.hamid.techtales.model.User;
-import com.hamid.techtales.model.dto.AuthorResponseDTO;
 import com.hamid.techtales.model.dto.PostRequestDTO;
 import com.hamid.techtales.model.dto.PostResponseDTO;
 import com.hamid.techtales.repo.PostRepo;
@@ -27,28 +26,26 @@ public class PostService {
                 .map(post -> new PostResponseDTO(
                         post.getTitle(),
                         post.getContent(),
-                        new AuthorResponseDTO(
-                                post.getAuthor().getId(),
-                                post.getAuthor().getUsername()
-                        )
+                        post.getAuthor().getUsername()
                 )).toList();
     }
 
     public PostResponseDTO newPost(@RequestBody PostRequestDTO requestDTO) {
-        String currentUsername = SecurityContextHolder.getContext()
-                .getAuthentication().getName();
+        User user = (User) SecurityContextHolder.getContext()
+                .getAuthentication();
 
         Post post = new Post();
+
         post.setTitle(requestDTO.title());
         post.setContent(requestDTO.content());
-        post.setAuthor(userRepo.findByUsername(currentUsername).get());
+        post.setAuthor(user);
 
         Post savedPost = postRepo.save(post);
 
         return new PostResponseDTO(
                 savedPost.getTitle(),
                 savedPost.getContent(),
-                new AuthorResponseDTO(savedPost.getAuthor().getId(), savedPost.getAuthor().getUsername())
+                savedPost.getAuthor().getUsername()
         );
     }
 
@@ -63,7 +60,11 @@ public class PostService {
 
     public List<Post> getAllPostById(Integer id) {
         User user = userRepo.findUserById(id);
-        return postRepo.findAllPostsByAuthorId(id);
+        return postRepo.findPostById(id);
+    }
+
+    public List<Post> getPostById(Integer id){
+        return postRepo.findPostById(id);
     }
 
     public List<Post> getAdminPosts() {
