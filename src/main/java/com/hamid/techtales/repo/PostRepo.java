@@ -8,5 +8,5 @@ import java.util.List;
 
 @Repository
 public interface PostRepo extends JpaRepository<Post, Integer> {
-    List<Post> findPostById(Integer id);
+    Post findPostById(Integer id);
 }

@@ -24,12 +24,12 @@ public class UserController {
     @Autowired
     private AuthenticationManager authenticationManager;
 
-    @PostMapping("/register")
+    @PostMapping("/auth/signup")
     public String register(@RequestBody User user){
         return userService.register(user);
     }
 
-    @PostMapping("/login")
+    @PostMapping("/auth/login")
     public String login(@RequestBody User user){
         Authentication authentication = authenticationManager
                 .authenticate(new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword()));

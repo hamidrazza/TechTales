@@ -19,19 +19,19 @@ public class PostController {
     @Autowired
     private PostService postService;
 
-    @GetMapping({"home","posts"})
+    @GetMapping({"/home","/posts"})
     public List<PostResponseDTO> posts(){
         return postService.getPosts();
     }
 
     @PostMapping("newPost")
-    public ResponseEntity<?> newPost(@Valid @RequestBody PostRequestDTO requestDTO, BindingResult result){
+    public ResponseEntity<?> newPost(@Valid @RequestBody PostRequestDTO requestDTO){
         PostResponseDTO response = postService.newPost(requestDTO);
 
-        if (result.hasErrors()){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(result.getFieldError().getDefaultMessage());
-        }
+//        if (result.hasErrors()){
+//            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+//                    .body(result.getFieldError().getDefaultMessage());
+//        }
 
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
@@ -43,13 +43,8 @@ public class PostController {
         return (updatedPost == null) ? "Post Invalid" : "Updated Successfully...";
     }
 
-    @GetMapping("{id}/posts")
-    public List<Post> getAllPostById(@PathVariable Integer id){
+    @GetMapping("/posts/{id}")
+    public PostResponseDTO getAllPostById(@PathVariable Integer id){
         return postService.getPostById(id);
-    }
-
-    @GetMapping("/posts")
-    public List<Post> getAllPosts(){
-        return postService.getAdminPosts();
     }
 }
