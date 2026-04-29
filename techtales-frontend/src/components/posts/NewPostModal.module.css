@@ -1,0 +1,19 @@
+.form { display: flex; flex-direction: column; gap: 18px; }
+.field { display: flex; flex-direction: column; }
+.toolbar {
+  display: flex; gap: 2px; padding: 6px 8px;
+  border: 1px solid var(--gray-200); border-bottom: none;
+  border-radius: var(--radius) var(--radius) 0 0; background: var(--gray-100);
+}
+.toolBtn {
+  padding: 4px 8px; border-radius: 3px; font-size: 12px; font-weight: 600;
+  color: var(--gray-600); transition: background var(--transition);
+}
+.toolBtn:hover { background: var(--gray-200); color: var(--black); }
+.editor { border-radius: 0 0 var(--radius) var(--radius); resize: vertical; min-height: 180px; }
+.actions { display: flex; align-items: center; justify-content: space-between; padding-top: 4px; }
+.right { display: flex; gap: 8px; }
+.error {
+  padding: 10px 12px; background: #fef2f2; border: 1px solid #fecaca;
+  border-radius: var(--radius); font-size: 13px; color: #dc2626;
+}

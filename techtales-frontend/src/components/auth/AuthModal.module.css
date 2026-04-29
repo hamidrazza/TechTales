@@ -1,0 +1,9 @@
+.form { display: flex; flex-direction: column; gap: 16px; }
+.field { display: flex; flex-direction: column; }
+.submit { width: 100%; justify-content: center; padding: 11px; font-size: 14px; margin-top: 4px; }
+.switch { font-size: 13px; color: var(--gray-400); text-align: center; }
+.switch button { color: var(--black); font-weight: 500; text-decoration: underline; font-size: 13px; }
+.error {
+  padding: 10px 12px; background: #fef2f2; border: 1px solid #fecaca;
+  border-radius: var(--radius); font-size: 13px; color: #dc2626;
+}
