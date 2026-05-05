@@ -1,19 +1,20 @@
 package com.hamid.techtales.config;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import com.hamid.techtales.logs.RequestLoggingFilter;
+import com.hamid.techtales.security.JwtAuthenticationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.http.HttpMethod;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -25,16 +26,17 @@ import java.util.List;
 @EnableWebSecurity
 public class SecurityConfig {
 
-    @Autowired
-    private UserDetailsService userDetailsService;
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final RequestLoggingFilter requestLoggingFilter;
+
+    public SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter, RequestLoggingFilter requestLoggingFilter) {
+        this.jwtAuthenticationFilter = jwtAuthenticationFilter;
+        this.requestLoggingFilter = requestLoggingFilter;
+    }
 
     @Bean
-    public AuthenticationProvider authProvider(){
-
-        DaoAuthenticationProvider provider = new DaoAuthenticationProvider(userDetailsService);
-        provider.setPasswordEncoder(new BCryptPasswordEncoder(12));
-
-        return provider;
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder(12);
     }
 
     @Bean
@@ -46,9 +48,11 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers("/auth/**", "/posts/**").permitAll()
                         .anyRequest().authenticated())
-                .httpBasic(Customizer.withDefaults())
+                .httpBasic(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterAfter(requestLoggingFilter, JwtAuthenticationFilter.class);
 
         return http.build();
     }

@@ -6,6 +6,7 @@ import com.hamid.techtales.model.dto.PostRequestDTO;
 import com.hamid.techtales.model.dto.PostResponseDTO;
 import com.hamid.techtales.repo.PostRepo;
 import com.hamid.techtales.repo.UserRepo;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -50,15 +51,14 @@ public class PostService {
         try {
             Post savedPost = postRepo.save(post);
             return toPostResponse(savedPost);
-        } catch (RuntimeException ex) {
+        } catch (DataIntegrityViolationException ex) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Post title already exists", ex);
         }
     }
 
     @Transactional
-    public PostResponseDTO updatePost(PostRequestDTO requestDTO) {
-
-        Post post = postRepo.findByTitle(requestDTO.title())
+    public PostResponseDTO updatePost(Integer id, PostRequestDTO requestDTO) {
+        Post post = postRepo.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Post not found"));
 
         String currentUsername = SecurityContextHolder.getContext()
@@ -70,6 +70,7 @@ public class PostService {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You can only update your own post");
         }
 
+        post.setTitle(requestDTO.title());
         post.setContent(requestDTO.content());
         Post savedPost = postRepo.save(post);
 
@@ -98,7 +99,25 @@ public class PostService {
                 post.getContent(),
                 post.getCreatedAt(),
                 post.getUpdatedAt(),
-                post.getAuthor().getUsername()
+                post.getAuthor().getName()
         );
+    }
+
+    @Transactional
+    public void deletePost(Integer id) {
+        Post post = postRepo.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Post not found"));
+
+        String currentUsername = SecurityContextHolder.getContext()
+                .getAuthentication().getName();
+
+        User user = userRepo.findByUsername(currentUsername)
+                .orElseThrow(() -> new UsernameNotFoundException("User Not Found..!!"));
+
+        if(!Objects.equals(post.getAuthor().getId(), user.getId())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You can only delete your own post");
+        }
+
+        postRepo.delete(post);
     }
 }

@@ -24,16 +24,21 @@ public class PostController {
         return postService.getPosts();
     }
 
-    @PostMapping("/newPost")
-    public ResponseEntity<?> newPost(@Valid @RequestBody PostRequestDTO requestDTO){
+    @PostMapping("/post")
+    public ResponseEntity<PostResponseDTO> newPost(@Valid @RequestBody PostRequestDTO requestDTO){
         PostResponseDTO response = postService.newPost(requestDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
-    @PutMapping("/updatePost")
-    public ResponseEntity<PostResponseDTO> updatePost(@Valid @RequestBody PostRequestDTO requestDTO){
-        PostResponseDTO updatedPost = postService.updatePost(requestDTO);
-        return ResponseEntity.ok(updatedPost);
+    @PutMapping("/post/{id}")
+    public PostResponseDTO updatePost(@PathVariable Integer id, @Valid @RequestBody PostRequestDTO requestDTO){
+        return postService.updatePost(id, requestDTO);
+    }
+
+    @DeleteMapping("/post/{id}")
+    public ResponseEntity<Void> deletePost(@PathVariable Integer id){
+        postService.deletePost(id);
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/posts/{id}")
